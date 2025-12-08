@@ -94,12 +94,45 @@ class OrderController extends Controller
         ]);
     }
 
+    public function orderStatus($id)
+    {
+        $order = Order::with('driver:id,name,phone')->find($id);
+
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'الطلب غير موجود'
+            ], 404);
+        }
+
+
+        if ($order->driver_id === null) {
+            return response()->json([
+                'status' => true,
+                'accepted' => false,
+                'message' => 'لم يتم قبول الطلب بعد'
+            ]);
+        }
+
+
+        return response()->json([
+            'status'   => true,
+            'message'  => 'تم قبول الطلب بنجاح',
+            'driver' => [
+                'id'    => $order->driver->id,
+                'name'  => $order->driver->name,
+                'phone' => $order->driver->phone,
+            ]
+        ]);
+    }
+
+
 
 
     public function availableOrders()
     {
         $orders = Order::whereNull('driver_id')
-            ->with('user:id,name')
+            ->with('user:id,name,phone')
             ->get()
             ->map(function ($order) {
                 return [
@@ -108,6 +141,7 @@ class OrderController extends Controller
                     'to' => $order->to_address,
                     'price' => $order->price,
                     'customer_name' => $order->user->name,
+                    'customer_phone' => $order->user->phone
                 ];
             });
 
@@ -141,6 +175,7 @@ class OrderController extends Controller
                 'from'           => $order->from_address,
                 'to'             => $order->to_address,
                 'price'          => $order->price
+
             ]
         ]);
     }
