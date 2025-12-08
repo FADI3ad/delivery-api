@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('from_address')->nullable();
             $table->string('to_address')->nullable();
             $table->string('price');
+            $table->string('vechicle_type');
 
             $table->timestamps();
         });

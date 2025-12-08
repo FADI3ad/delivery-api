@@ -14,11 +14,14 @@ class OrderController extends Controller
             'from_address' => 'required|string',
             'to_address'   => 'required|string',
             'price'        => 'required|numeric',
+            'vechicle_type' => 'required|string |in:سيارة,توك توك,موتوسيكل,ترو سيكل,دراجة',
         ], [
             'from_address.required' => 'العنوان المرسل مطلوب',
             'to_address.required'   => 'العنوان المستلم مطلوب',
             'price.required'        => 'السعر مطلوب',
             'price.numeric'         => 'السعر يجب أن يكون رقم',
+            'vechicle_type.required' => 'نوع المركبة مطلوب',
+            'vechicle_type.in'      => 'نوع المركبة غير صحيح',
         ]);
 
         $order = Order::create([
@@ -26,6 +29,7 @@ class OrderController extends Controller
             'from_address' => $request->from_address,
             'to_address'   => $request->to_address,
             'price'        => $request->price,
+            'vechicle_type' => $request->vechicle_type,
             'driver_id'    => null,
         ]);
 
@@ -37,9 +41,12 @@ class OrderController extends Controller
                 'from'   => $order->from_address,
                 'to'     => $order->to_address,
                 'price'  => $order->price,
+                'vechicle_type' => $order->vechicle_type,
             ]
         ], 201);
     }
+
+
 
     public function deleteOrder($id)
     {
@@ -87,7 +94,7 @@ class OrderController extends Controller
                         'from_address' => $order->from_address,
                         'to_address' => $order->to_address,
                         'price' => $order->price,
-
+                        'vechicle_type' => $order->vechicle_type
                     ];
                 })
             ]
@@ -122,6 +129,7 @@ class OrderController extends Controller
                 'id'    => $order->driver->id,
                 'name'  => $order->driver->name,
                 'phone' => $order->driver->phone,
+
             ]
         ]);
     }
@@ -131,17 +139,23 @@ class OrderController extends Controller
 
     public function availableOrders()
     {
+
+        $driverVehicle = auth('sanctum')->user()->vechicle_type;
+
+
         $orders = Order::whereNull('driver_id')
+            ->where('vechicle_type', $driverVehicle)
             ->with('user:id,name,phone')
             ->get()
             ->map(function ($order) {
                 return [
-                    'id' => $order->id,
-                    'from' => $order->from_address,
-                    'to' => $order->to_address,
-                    'price' => $order->price,
-                    'customer_name' => $order->user->name,
-                    'customer_phone' => $order->user->phone
+                    'id'             => $order->id,
+                    'from'           => $order->from_address,
+                    'to'             => $order->to_address,
+                    'price'          => $order->price,
+                    'customer_name'  => $order->user->name,
+                    'customer_phone' => $order->user->phone,
+                    'vechicle_type'   => $order->vechicle_type,
                 ];
             });
 
@@ -150,6 +164,7 @@ class OrderController extends Controller
             'orders' => $orders
         ]);
     }
+
 
 
     public function acceptOrder($id)
@@ -174,8 +189,8 @@ class OrderController extends Controller
                 'customer_phone' => $order->user->phone,
                 'from'           => $order->from_address,
                 'to'             => $order->to_address,
-                'price'          => $order->price
-
+                'price'          => $order->price,
+                'vechicle_type'  => $order->vechicle_type
             ]
         ]);
     }
@@ -194,6 +209,7 @@ class OrderController extends Controller
                     'price'          => $order->price,
                     'customer_name'  => $order->user->name,
                     'customer_phone' => $order->user->phone,
+                    'vechicle_type'  => $order->vechicle_type
                 ];
             });
 

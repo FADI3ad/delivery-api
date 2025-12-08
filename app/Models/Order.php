@@ -15,6 +15,7 @@ class Order extends Model
         'from_address',
         'to_address',
         'price',
+        'vechicle_type',
     ];
 
 
