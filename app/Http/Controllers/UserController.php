@@ -8,7 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-
+use App\Models\Order;
 class UserController extends Controller
 {
 
@@ -113,4 +113,161 @@ class UserController extends Controller
             'message' => 'تم تسجيل الخروج بنجاح',
         ]);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // admin functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function drivers(Request $request)
+    {
+
+        $perPage = $request->query('per_page',);
+
+        $drivers = User::select('name', 'phone', 'email', 'vechicle_type')
+            ->where('role', 'سائق')
+            ->paginate($perPage);
+
+        return response()->json([
+            'status' => true,
+
+
+            'data' => $drivers->items(),
+
+            'pagination' => [
+                'current_page' => $drivers->currentPage(),
+                'per_page' => $drivers->perPage(),
+                'total' => $drivers->total(),
+                'last_page' => $drivers->lastPage(),
+            ]
+        ]);
+    }
+
+    public function customers(Request $request)
+    {
+        $perPage = $request->query('per_page', 20);
+
+        $customers = User::select('name', 'phone', 'email')
+            ->where('role', 'عميل')
+            ->paginate($perPage);
+
+        return response()->json([
+            'status' => true,
+
+
+            'data' => $customers->items(),
+
+
+            'pagination' => [
+                'current_page' => $customers->currentPage(),
+                'per_page' => $customers->perPage(),
+                'total' => $customers->total(),
+                'last_page' => $customers->lastPage(),
+            ]
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function deleteUser($id)
+    {
+
+        $user = User::find($id);
+
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'اليوزر غير موجود'
+            ], 404);
+        }
+
+
+        if ($user->role == 'عميل' || $user->role == 'سائق') {
+
+
+            $user->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'تم حذف حساب اليوزر بنجاح'
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'اليوزر ليس من نوع صالح'
+        ], 400);
+    }
+
 }

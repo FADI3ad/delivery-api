@@ -41,4 +41,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/orders/{id}', [OrderController::class, 'deleteOrder']);
     Route::get('/order-status/{id}', [OrderController::class, 'orderStatus']);
 
+
+
+
+    Route::get('/drivers', [UserController::class, 'drivers']);
+    Route::get('/users', [UserController::class, 'customers']);
+    Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser']);
+    Route::get('/orders', [OrderController::class, 'allOrders']);
 });
