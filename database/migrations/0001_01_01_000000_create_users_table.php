@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone')->unique();
+            $table->string('phone')->unique()->nullable();
             $table->string('email')->unique();
             $table->string('image')->nullable();
             $table->string('national_id')->unique()->nullable();
             $table->string('national_image')->nullable();
-            $table->enum('vechicle_type', ['سيارة', 'توك توك', 'موتوسيكل', 'ترسيكل' , 'دراجة' ,'عميل'])->default('عميل')->nullable();
+            $table->enum('vechicle_type', ['سيارة', 'توك توك', 'موتوسيكل', 'تروسيكل' , 'دراجة' ,'عميل'])->default('عميل')->nullable();
             $table->enum('role', ['admin', 'عميل', 'سائق'])->default('عميل');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

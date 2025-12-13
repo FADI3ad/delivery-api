@@ -14,7 +14,7 @@ class OrderController extends Controller
             'from_address' => 'required|string',
             'to_address'   => 'required|string',
             'price'        => 'required|numeric',
-            'vechicle_type' => 'required|string |in:سيارة,توك توك,موتوسيكل,ترو سيكل,دراجة',
+            'vechicle_type' => 'required|string |in:سيارة,توك توك,موتوسيكل,تروسيكل,دراجة',
         ], [
             'from_address.required' => 'العنوان المرسل مطلوب',
             'to_address.required'   => 'العنوان المستلم مطلوب',

@@ -18,7 +18,7 @@ class UserRequest extends FormRequest
             'email'           => 'required|email|unique:users,email',
             'phone'           => 'required|string|unique:users,phone',
             'national_id'     => 'nullable|string|unique:users,national_id',
-            'vechicle_type'   => 'nullable|in:سيارة,عميل,توك توك,موتوسيكل,ترسيكل,دراجة',
+            'vechicle_type'   => 'nullable|in:سيارة,عميل,توك توك,موتوسيكل,تروسيكل,دراجة',
             'role'            => 'nullable|in:admin,عميل,سائق',
             'password'        => 'required|string|min:6|confirmed',
             'image'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',

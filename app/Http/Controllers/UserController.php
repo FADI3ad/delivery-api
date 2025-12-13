@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\Order;
+
 class UserController extends Controller
 {
 
@@ -142,7 +143,15 @@ class UserController extends Controller
     // admin functions
 
 
-
+    private function authorizeAdmin($user)
+    {
+        if ($user->role !== 'admin') {
+            return response()->json([
+                'status' => false,
+                'message' => 'غير مصرح لك بالوصول لهذه الخاصية'
+            ], 403);
+        }
+    }
 
 
 
@@ -169,6 +178,8 @@ class UserController extends Controller
 
     public function drivers(Request $request)
     {
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
 
         $perPage = $request->query('per_page',);
 
@@ -193,6 +204,9 @@ class UserController extends Controller
 
     public function customers(Request $request)
     {
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
+
         $perPage = $request->query('per_page', 20);
 
         $customers = User::select('name', 'phone', 'email')
@@ -238,9 +252,11 @@ class UserController extends Controller
 
 
 
-
-    public function deleteUser($id)
+    public function deleteUser($id , Request $request)
     {
+
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
 
         $user = User::find($id);
 
@@ -269,5 +285,4 @@ class UserController extends Controller
             'message' => 'اليوزر ليس من نوع صالح'
         ], 400);
     }
-
 }
