@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
@@ -183,7 +184,7 @@ class UserController extends Controller
 
         $perPage = $request->query('per_page',);
 
-        $drivers = User::select('name', 'phone', 'email', 'vechicle_type')
+        $drivers = User::select('id','name', 'phone', 'email', 'vechicle_type')
             ->where('role', 'سائق')
             ->paginate($perPage);
 
@@ -209,17 +210,13 @@ class UserController extends Controller
 
         $perPage = $request->query('per_page', 20);
 
-        $customers = User::select('name', 'phone', 'email')
+        $customers = User::select('id', 'name', 'phone', 'email')
             ->where('role', 'عميل')
             ->paginate($perPage);
 
         return response()->json([
             'status' => true,
-
-
             'data' => $customers->items(),
-
-
             'pagination' => [
                 'current_page' => $customers->currentPage(),
                 'per_page' => $customers->perPage(),
@@ -252,7 +249,7 @@ class UserController extends Controller
 
 
 
-    public function deleteUser($id , Request $request)
+    public function deleteUser($id, Request $request)
     {
 
         $check = $this->authorizeAdmin($request->user());
@@ -284,5 +281,56 @@ class UserController extends Controller
             'status' => false,
             'message' => 'اليوزر ليس من نوع صالح'
         ], 400);
+    }
+
+
+
+
+
+    public function driverDailyEarnings($driverId,Request $request)
+    {
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
+        $today = Carbon::today();
+
+
+        $driver = User::find($driverId);
+
+        if (!$driver) {
+            return response()->json([
+                'status' => false,
+                'message' => 'المستخدم غير موجود'
+            ], 404);
+        }
+
+
+        if ($driver->role !== 'سائق') {
+            return response()->json([
+                'status' => false,
+                'message' => 'هذا المستخدم ليس سائق'
+            ], 403);
+        }
+
+
+        $totalTrips = Order::where('driver_id', $driverId)
+            ->whereDate('created_at', $today)
+            ->count();
+
+
+        $totalEarnings = Order::where('driver_id', $driverId)
+            ->whereDate('created_at', $today)
+            ->sum('price');
+
+
+        return response()->json([
+            'status' => true,
+            'date' => $today->toDateString(),
+
+            'id'   => $driver->id,
+            'name' => $driver->name,
+            'total_trips'    => $totalTrips,
+            'total_earnings' => $totalEarnings
+
+        ]);
     }
 }

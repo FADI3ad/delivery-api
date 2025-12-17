@@ -4,11 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
-
-
-
-
-
+use App\Models\User;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -47,6 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser']);
 
 
+
+    Route::get(
+        '/daily-earnings/{driver_id}',
+        [UserController::class, 'driverDailyEarnings']
+    );
 
 
 
