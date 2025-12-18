@@ -184,7 +184,7 @@ class UserController extends Controller
 
         $perPage = $request->query('per_page',);
 
-        $drivers = User::select('id','name', 'phone', 'email', 'vechicle_type')
+        $drivers = User::select('id', 'name', 'phone', 'email', 'vechicle_type')
             ->where('role', 'سائق')
             ->paginate($perPage);
 
@@ -287,7 +287,7 @@ class UserController extends Controller
 
 
 
-    public function driverDailyEarnings($driverId,Request $request)
+    public function driverDailyEarnings($driverId, Request $request)
     {
         $check = $this->authorizeAdmin($request->user());
         if ($check) return $check;
@@ -331,6 +331,41 @@ class UserController extends Controller
             'total_trips'    => $totalTrips,
             'total_earnings' => $totalEarnings
 
+        ]);
+    }
+
+
+    public function deleteOrder($id, Request $request)
+    {
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
+
+        $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json([
+                'status' => false,
+                'message' => 'الطلب غير موجود'
+            ], 404);
+        }
+
+        $order->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم حذف الطلب بنجاح'
+        ]);
+    }
+    public function deleteAllOrders(Request $request)
+    {
+        $check = $this->authorizeAdmin($request->user());
+        if ($check) return $check;
+
+        Order::truncate(); 
+
+        return response()->json([
+            'status' => true,
+            'message' => 'تم حذف جميع الطلبات بنجاح'
         ]);
     }
 }

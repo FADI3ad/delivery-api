@@ -49,6 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
         [UserController::class, 'driverDailyEarnings']
     );
 
-
-
+    Route::delete('/admin/orders/{id}', [UserController::class, 'deleteOrder']);
+    Route::delete('/admin/orders', [UserController::class, 'deleteAllOrders']);
 });
